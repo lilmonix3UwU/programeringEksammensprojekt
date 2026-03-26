@@ -6,8 +6,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Move")]
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float airSpeed = 50f;
-    [SerializeField] private float airSpeedPostGrapple = 20f;
-    [SerializeField] private float maxAirVel = 50f;
+    [SerializeField] private float windThreshold = 20f;
     [SerializeField] private float smoothing = 0.25f;
     [System.NonSerialized] public bool freeze;
     [System.NonSerialized] public Vector3 requestedMove;
@@ -36,6 +35,15 @@ public class PlayerMove : MonoBehaviour
     private bool wasInAir;
     private float timeSinceUngrounded;
     private float timeSinceJumpRequest;
+
+    [Header("Dash")]
+    [SerializeField] private float dashForce = 20f;
+    [SerializeField] private float dashCooldown = 1f;
+    private bool requestedDash;
+
+    [Header("Effects")]
+    [SerializeField] private ParticleSystem dashEffect;
+    [SerializeField] private ParticleSystem windEffect;
 
     [Header("Sounds")]
     [SerializeField] private float footstepInterval = 1f;
@@ -68,6 +76,17 @@ public class PlayerMove : MonoBehaviour
         // Rotate
         Vector3 graphicRot = new Vector3(0f, cam.eulerAngles.y, 0f);
         graphic.eulerAngles = graphicRot;
+
+        // Dash input
+        requestedDash = requestedDash || input.dash;
+
+        // Wind effect
+        Vector2 xzVel = new Vector2(rb.velocity.x, rb.velocity.z);
+        if (xzVel.magnitude > windThreshold)
+        {
+            if (!windEffect.isPlaying)
+                windEffect.Play();
+        }
 
         if (freeze)
             return;
@@ -113,6 +132,15 @@ public class PlayerMove : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Dash
+        if (requestedDash)
+        {
+            requestedDash = false;
+
+            dashEffect.Play();
+            rb.AddForce(cam.transform.forward * dashForce, ForceMode.Impulse);
+        }
+
         if (freeze)
             return;
 
@@ -154,14 +182,7 @@ public class PlayerMove : MonoBehaviour
         {
             timeSinceUngrounded += Time.deltaTime;
 
-            float effectiveAirSpeed = grappler.wasGrappling ? airSpeedPostGrapple : airSpeed;
-            rb.AddForce(requestedMove * effectiveAirSpeed);
-
-            if (grappler.wasGrappling)
-                return;
-
-            Vector3 clampedVel = Vector3.ClampMagnitude(new Vector3(rb.velocity.x, 0f, rb.velocity.z), maxAirVel);
-            rb.velocity = new Vector3(clampedVel.x, rb.velocity.y, clampedVel.z);
+            rb.AddForce(requestedMove * airSpeed);
         }
     }
 
