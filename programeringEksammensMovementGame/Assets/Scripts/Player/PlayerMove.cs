@@ -5,8 +5,9 @@ public class PlayerMove : MonoBehaviour
 {
     [Header("Move")]
     [SerializeField] private float moveSpeed = 20f;
-    [SerializeField] private float airSpeed = 50f;
+    [SerializeField] private float maxSpeed = 50f;
     [SerializeField] private float windThreshold = 20f;
+    [SerializeField] private float windEffectVelMult = 0.8f;
     [SerializeField] private float smoothing = 0.25f;
     [System.NonSerialized] public bool freeze;
     [System.NonSerialized] public Vector3 requestedMove;
@@ -45,6 +46,10 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private ParticleSystem dashEffect;
     [SerializeField] private ParticleSystem windEffect;
 
+    [Header("Shake")]
+    [SerializeField] private ShakeTransformEventData dashShakeData;
+    private ShakeTransform st;
+
     [Header("Sounds")]
     [SerializeField] private float footstepInterval = 1f;
     //[SerializeField] private AudioSource[] footstepSounds;
@@ -64,6 +69,8 @@ public class PlayerMove : MonoBehaviour
 
         graphic = transform.Find("Graphic");
         groundCheck = transform.Find("GroundCheck");
+
+        st = cam.GetComponent<ShakeTransform>();
     }
 
     private void Update()
@@ -81,11 +88,18 @@ public class PlayerMove : MonoBehaviour
         requestedDash = requestedDash || input.dash;
 
         // Wind effect
-        Vector2 xzVel = new Vector2(rb.velocity.x, rb.velocity.z);
-        if (xzVel.magnitude > windThreshold)
+        if (rb.velocity.magnitude > windThreshold)
         {
+            ParticleSystem.MainModule windEffectMain = windEffect.main;
+            windEffectMain.startSpeed = rb.velocity.magnitude * windEffectVelMult;
+
             if (!windEffect.isPlaying)
                 windEffect.Play();
+        }
+        else
+        {
+            if (windEffect.isPlaying)
+                windEffect.Stop();
         }
 
         if (freeze)
@@ -139,6 +153,7 @@ public class PlayerMove : MonoBehaviour
 
             dashEffect.Play();
             rb.AddForce(cam.transform.forward * dashForce, ForceMode.Impulse);
+            st.AddShakeEvent(dashShakeData);
         }
 
         if (freeze)
@@ -176,13 +191,15 @@ public class PlayerMove : MonoBehaviour
             if (readyToJump)
                 ungroundedDueToJump = false;
 
-            rb.velocity = new Vector3(requestedMove.x * moveSpeed, rb.velocity.y, requestedMove.z * moveSpeed);
+            if (rb.velocity.magnitude < maxSpeed)
+                rb.AddForce(requestedMove * moveSpeed);
         }
         else
         {
             timeSinceUngrounded += Time.deltaTime;
 
-            rb.AddForce(requestedMove * airSpeed);
+            if (rb.velocity.magnitude < maxSpeed)
+                rb.AddForce(requestedMove * moveSpeed);
         }
     }
 

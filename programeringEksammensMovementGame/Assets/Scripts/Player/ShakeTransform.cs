@@ -12,10 +12,7 @@ public class ShakeTransform : MonoBehaviour
 
         public ShakeTransformEventData.Target target
         {
-            get
-            {
-                return data.target;
-            }
+            get { return data.target; }
         }
 
         Vector3 noiseOffset;
@@ -90,18 +87,12 @@ public class ShakeTransform : MonoBehaviour
             ShakeEvent se = shakeEvents[i]; se.Update();
 
             if (se.target == ShakeTransformEventData.Target.Position)
-            {
                 positionOffset += se.noise;
-            }
             else
-            {
                 rotationOffset += se.noise;
-            }
 
             if (!se.IsAlive())
-            {
                 shakeEvents.RemoveAt(i);
-            }
         }
 
         transform.localPosition = positionOffset;

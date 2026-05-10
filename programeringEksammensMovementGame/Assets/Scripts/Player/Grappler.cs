@@ -2,9 +2,9 @@
 
 public class Grappler : MonoBehaviour
 {
-    //[SerializeField] private GameObject hookInstance;
-    //[SerializeField] GameObject hookItem;
-    //private GameObject hook;
+    [SerializeField] private GameObject grappleHandInstance;
+    [SerializeField] GameObject grappleHandItem;
+    private GameObject grappleHand;
     private Camera cam;
     private PlayerMove plrMove;
     private Rigidbody rb;
@@ -37,8 +37,8 @@ public class Grappler : MonoBehaviour
     [Header("Cooldown")]
     [SerializeField] private float grappleCooldown = 3f;
     [SerializeField] private float hookDownAmount = 1f;
-    //private Vector3 initialHookPos;
-    //private Vector3 hookDownPos;
+    private Vector3 initialGrappleHandPos;
+    private Vector3 grappleHandDownPos;
     private float grappleCooldownTimer;
     private bool canGrapple;
 
@@ -63,6 +63,13 @@ public class Grappler : MonoBehaviour
     private Vector3 grappleTo;
     private RopeSpring spring;
 
+    [Header("Effect")]
+    [SerializeField] private ParticleSystem lightningEffect;
+
+    [Header("Shake")]
+    [SerializeField] private ShakeTransformEventData grappleShakeData;
+    private ShakeTransform st;
+
     [Header("Sounds")]
     //[SerializeField] private AudioSource throwSound;
     //[SerializeField] private AudioSource hitSound;
@@ -83,11 +90,13 @@ public class Grappler : MonoBehaviour
 
         lr = GetComponentInChildren<LineRenderer>();
 
-        //hook = Instantiate(hookInstance);
-        //hook.SetActive(false);
+        st = cam.GetComponent<ShakeTransform>();
 
-        //initialHookPos = hookItem.transform.localPosition;
-        //hookDownPos = initialHookPos + Vector3.down * hookDownAmount;
+        grappleHand = Instantiate(grappleHandInstance);
+        grappleHand.SetActive(false);
+
+        initialGrappleHandPos = grappleHandItem.transform.localPosition;
+        grappleHandDownPos = initialGrappleHandPos + Vector3.down * hookDownAmount;
 
         spring = new RopeSpring();
         spring.SetTarget(0);
@@ -111,11 +120,11 @@ public class Grappler : MonoBehaviour
         {
             grappleCooldownTimer += Time.deltaTime;
 
-            //hookItem.transform.localPosition = Vector3.Lerp(hookDownPos, initialHookPos, grappleCooldownTimer / grappleCooldown);
+            grappleHandItem.transform.localPosition = Vector3.Lerp(grappleHandDownPos, initialGrappleHandPos, grappleCooldownTimer / grappleCooldown);
 
             if (grappleCooldownTimer >= grappleCooldown)
             {
-                //hookItem.transform.localPosition = initialHookPos;
+                grappleHandItem.transform.localPosition = initialGrappleHandPos;
                 grappleCooldownTimer = 0;
                 canGrapple = true;
             }
@@ -134,6 +143,8 @@ public class Grappler : MonoBehaviour
 
             staminaMgr.LoseStamina(passiveStaminaLoss * Time.deltaTime);
         }
+        else
+            rb.useGravity = true;
     }
 
     private void LateUpdate()
@@ -150,14 +161,16 @@ public class Grappler : MonoBehaviour
 
     private void StartGrapple()
     {
-        //hook.SetActive(true);
-        //hookItem.SetActive(false);
+        grappleHand.SetActive(true);
+        grappleHandItem.SetActive(false);
 
         Vector3 difference = grapplePoint - lr.transform.position;
 
-        //hook.transform.rotation = Quaternion.LookRotation(difference);
+        grappleHand.transform.rotation = Quaternion.LookRotation(difference);
 
         //throwSound.Play();
+        lightningEffect.Play();
+        st.AddShakeEvent(grappleShakeData);
 
         if (miss)
         {
@@ -214,20 +227,25 @@ public class Grappler : MonoBehaviour
         // Climbing Upwards
         if (input.climbingUpwards)
         {
+            rb.useGravity = false;
+
             if (jointLength > 0)
                 jointLength -= climbSpeed * Time.deltaTime;
 
             joint.maxDistance = jointLength;
         }
-
         // Climbing Downwards
-        if (input.climbingDownwards)
+        else if (input.climbingDownwards)
         {
+            rb.useGravity = false;
+
             if (jointLength < maxGrappleDist)
                 jointLength += climbSpeed * Time.deltaTime;
 
             joint.maxDistance = jointLength;
         }
+        else
+            rb.useGravity = true;
     }
 
     private void CheckForGrapplePoints()
@@ -280,13 +298,13 @@ public class Grappler : MonoBehaviour
 
         Vector3 up = Quaternion.LookRotation((grapplePoint - lr.transform.position).normalized) * Vector3.up;
 
-        //if (!grappling || (!grappling && !grapplingMiss))
-            //hook.transform.rotation = Quaternion.LookRotation(curGrapplePos - lr.transform.position);
+        if (!grappling || (!grappling && !grapplingMiss))
+            grappleHand.transform.rotation = Quaternion.LookRotation(curGrapplePos - lr.transform.position);
 
         float velAmplifier = grapplingMiss ? 1f : 1f + rb.velocity.magnitude * velocityMult;
         curGrapplePos = Vector3.Lerp(curGrapplePos, grappleTo, Time.deltaTime * attachSpeed * velAmplifier);
 
-        //hook.transform.position = curGrapplePos;
+        grappleHand.transform.position = curGrapplePos;
 
         for (int i = 0; i < quality + 1; i++)
         {
@@ -301,8 +319,8 @@ public class Grappler : MonoBehaviour
     {
         SnapHook();
 
-        //hook.SetActive(false);
-        //hookItem.SetActive(true);
+        grappleHand.SetActive(false);
+        grappleHandItem.SetActive(true);
 
         spring.Reset();
 
