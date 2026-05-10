@@ -30,7 +30,8 @@ public class InputManager : MonoBehaviour
     public bool crouch => inputActions.Player.Crouch.IsPressed();
 
     public bool dash => inputActions.Player.Dash.WasPressedThisFrame();
-    public bool attack => inputActions.Player.Attack.WasPressedThisFrame();
+    public bool attack => inputActions.Player.Attack.IsPressed();
+    public bool attackUp => inputActions.Player.Attack.WasReleasedThisFrame();
 
     public bool grappleDown => inputActions.Player.Grapple.WasPressedThisFrame();
     public bool grappleUp => inputActions.Player.Grapple.WasReleasedThisFrame();

@@ -5,7 +5,7 @@ public class PlayerMove : MonoBehaviour
 {
     [Header("Move")]
     [SerializeField] private float moveSpeed = 20f;
-    [SerializeField] private float maxSpeed = 50f;
+    [SerializeField] private float maxSpeed = 20f;
     [SerializeField] private float windThreshold = 20f;
     [SerializeField] private float windEffectVelMult = 0.8f;
     [SerializeField] private float smoothing = 0.25f;
@@ -192,14 +192,14 @@ public class PlayerMove : MonoBehaviour
                 ungroundedDueToJump = false;
 
             if (rb.velocity.magnitude < maxSpeed)
-                rb.AddForce(requestedMove * moveSpeed);
+                rb.AddForce(requestedMove * moveSpeed, ForceMode.Force);
         }
         else
         {
             timeSinceUngrounded += Time.deltaTime;
 
             if (rb.velocity.magnitude < maxSpeed)
-                rb.AddForce(requestedMove * moveSpeed);
+                rb.AddForce(requestedMove * moveSpeed, ForceMode.Force);
         }
     }
 
