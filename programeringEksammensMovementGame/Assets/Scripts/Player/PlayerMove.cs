@@ -5,10 +5,13 @@ public class PlayerMove : MonoBehaviour
 {
     [Header("Move")]
     [SerializeField] private float moveSpeed = 20f;
+    [SerializeField] private float airSpeed = 20f;
     [SerializeField] private float maxSpeed = 20f;
     [SerializeField] private float windThreshold = 20f;
     [SerializeField] private float windEffectVelMult = 0.8f;
     [SerializeField] private float smoothing = 0.25f;
+    [SerializeField] private float groundDrag = 6f;
+    [SerializeField] private float airDrag = 2f;
     [System.NonSerialized] public bool freeze;
     [System.NonSerialized] public Vector3 requestedMove;
     [System.NonSerialized] public Vector3 accel;
@@ -20,6 +23,8 @@ public class PlayerMove : MonoBehaviour
 
     private Transform graphic;
     private Transform cam;
+
+    private Animator gauntletAnim;
 
     [Header("Jump")]
     [SerializeField] private float jumpForce = 50f;
@@ -36,6 +41,21 @@ public class PlayerMove : MonoBehaviour
     private bool wasInAir;
     private float timeSinceUngrounded;
     private float timeSinceJumpRequest;
+
+    [Header("Wall Run")]
+    [SerializeField] private float wallDist = 0.5f;
+    [SerializeField] private float minWallRunHeight = 1.5f;
+    [SerializeField] private float wallRunGravity = 10f;
+    [SerializeField] private float wallRunJumpForce = 30f;
+    [SerializeField] private float camTilt = 5f;
+    [SerializeField] private float camTiltSmooth = 2f;
+    public float tilt { get; private set; }
+    private float tiltVel;
+    private bool canWallRun;
+    private bool wallLeft;
+    private bool wallRight;
+    private RaycastHit leftWallHit;
+    private RaycastHit rightWallHit;
 
     [Header("Dash")]
     [SerializeField] private float dashForce = 20f;
@@ -69,6 +89,8 @@ public class PlayerMove : MonoBehaviour
 
         graphic = transform.Find("Graphic");
         groundCheck = transform.Find("GroundCheck");
+
+        gauntletAnim = FindFirstObjectByType<Gauntlet>().GetComponent<Animator>();
 
         st = cam.GetComponent<ShakeTransform>();
     }
@@ -122,10 +144,17 @@ public class PlayerMove : MonoBehaviour
             wasInAir = false;
         }
 
+        // Wall run
+        canWallRun = !Physics.Raycast(transform.position, Vector3.down, minWallRunHeight);
+        wallLeft = Physics.Raycast(transform.position, -cam.right, out leftWallHit, wallDist);
+        wallRight = Physics.Raycast(transform.position, cam.right, out rightWallHit, wallDist);
+
         // Footsteps
         bool walking = moveInput.sqrMagnitude > 0.01f && grounded;
         if (walking)
         {
+            gauntletAnim.SetBool("Walking", true);
+        
             footstepTimer += Time.deltaTime;
             if (footstepTimer >= footstepInterval)
             {
@@ -133,8 +162,11 @@ public class PlayerMove : MonoBehaviour
                 footstepTimer = 0;
             }
         }
-        else
+        else 
+        {
+            gauntletAnim.SetBool("Walking", false);
             footstepTimer = 0;
+        }
     }
 
     private void LateUpdate()
@@ -158,6 +190,19 @@ public class PlayerMove : MonoBehaviour
 
         if (freeze)
             return;
+            
+        // Wall run
+        if (canWallRun) 
+        {
+            if (wallLeft)
+                StartWallRun();
+            else if (wallRight)
+                StartWallRun();
+            else
+                StopWallRun();
+        }
+        else
+            StopWallRun();
 
         // Jump
         bool canCoyoteJump = timeSinceUngrounded < coyoteTime && !ungroundedDueToJump;
@@ -187,20 +232,49 @@ public class PlayerMove : MonoBehaviour
         if (grounded)
         {
             timeSinceUngrounded = 0f;
+            
+            rb.drag = groundDrag;
 
             if (readyToJump)
                 ungroundedDueToJump = false;
 
             if (rb.velocity.magnitude < maxSpeed)
-                rb.AddForce(requestedMove * moveSpeed, ForceMode.Force);
+                rb.AddForce(requestedMove * moveSpeed, ForceMode.Acceleration);
         }
         else
         {
             timeSinceUngrounded += Time.deltaTime;
 
+            rb.drag = airDrag;
+
             if (rb.velocity.magnitude < maxSpeed)
-                rb.AddForce(requestedMove * moveSpeed, ForceMode.Force);
+                rb.AddForce(requestedMove * airSpeed, ForceMode.Acceleration);
         }
+    }
+    
+    private void StartWallRun() 
+    {
+        rb.useGravity = false;
+
+        rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
+
+        float tiltAngle = wallLeft ? -camTilt : camTilt;
+        tilt = Mathf.SmoothDamp(tilt, tiltAngle, ref tiltVel, camTiltSmooth);
+
+        if (requestedJump) 
+        {
+            requestedJump = false;
+
+            Vector3 wallRunJumpDir = wallLeft ? transform.up + leftWallHit.normal : transform.up + rightWallHit.normal;
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            rb.AddForce(wallRunJumpDir * wallRunJumpForce, ForceMode.Force);
+        }
+    }
+    
+    private void StopWallRun() 
+    {
+        rb.useGravity = true;
+        tilt = Mathf.SmoothDamp(tilt, 0f, ref tiltVel, camTiltSmooth);
     }
 
     private void ResetJump() => readyToJump = true;

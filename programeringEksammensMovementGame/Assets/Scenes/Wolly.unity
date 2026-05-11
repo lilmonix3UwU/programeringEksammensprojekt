@@ -9454,6 +9454,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 928540527102624287, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: m_Drag
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 928540527102624287, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: m_AngularDrag
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 1128167064042098588, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -9535,20 +9543,52 @@ PrefabInstance:
       value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: airDrag
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: camTilt
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
       propertyPath: airSpeed
-      value: 30
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
       propertyPath: maxSpeed
-      value: 50
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: wallDist
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
       propertyPath: jumpForce
-      value: 25
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
       propertyPath: moveSpeed
-      value: 80
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: camTiltSmooth
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: minJumpHeight
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: wallRunGravity
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: minWallRunHeight
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035129076679883919, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
+      propertyPath: wallRunJumpForce
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 9208318398700991306, guid: 959c93fecc545489e9452a8633d4bf88, type: 3}
       propertyPath: climbSpeed

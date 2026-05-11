@@ -5,6 +5,7 @@ public class CameraLook : MonoBehaviour
     public float sens = 0.1f;
 
     private Vector3 eulerAngles;
+    private PlayerMove plrMove;
 
     private InputManager input;
 
@@ -15,6 +16,7 @@ public class CameraLook : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         transform.eulerAngles = eulerAngles;
+        plrMove = FindFirstObjectByType<PlayerMove>();
     }
 
     private void Update()
@@ -24,6 +26,6 @@ public class CameraLook : MonoBehaviour
 
         eulerAngles += new Vector3(-input.look.y, input.look.x) * sens;
         eulerAngles.x = Mathf.Clamp(eulerAngles.x, -90f, 90f);
-        transform.eulerAngles = eulerAngles;
+        transform.eulerAngles = new Vector3(eulerAngles.x, eulerAngles.y, plrMove.tilt);
     }
 }
