@@ -5,10 +5,12 @@ using UnityEngine;
 public class HeadNShooting : MonoBehaviour
 {
     [SerializeField] EnemyNavigation enemyNavigation;
+    [SerializeField] GameObject lazur;
     [SerializeField] float viewAngle = 70;
     [SerializeField] float maxRotationSpeed = 30;
-
-
+    [SerializeField] float shotSpeed = 30;
+    [SerializeField] float shotCooldown = 1;
+    float currentShotCooldown = 0;
 
     GameObject player;
 
@@ -17,6 +19,7 @@ public class HeadNShooting : MonoBehaviour
     void Start()
     {
         player = enemyNavigation.player;
+        currentShotCooldown = shotCooldown;
     }
 
     void Update()
@@ -41,15 +44,54 @@ public class HeadNShooting : MonoBehaviour
         }
 
 
-        if (!enemyNavigation.playerVisible)
+        if (!enemyNavigation.playerVisible && !enemyNavigation.hunting)
         {
             transform.rotation = Quaternion.RotateTowards(transform.rotation, enemyNavigation.transform.rotation, maxRotationSpeed * Time.deltaTime);
+            if (currentShotCooldown != shotCooldown)
+            {
+                currentShotCooldown = shotCooldown;
+            }
         }
         else
         {
-            Quaternion r = Quaternion.LookRotation(player.transform.position - transform.position);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, r, maxRotationSpeed * Time.deltaTime);
 
+            if (enemyNavigation.playerVisible)
+            {
+                Quaternion r = Quaternion.LookRotation(player.transform.position - transform.position);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, r, maxRotationSpeed * Time.deltaTime);
+                if (Vector3.Distance(player.transform.position, transform.position) < enemyNavigation.shootingRange && Vector3.Distance(player.transform.position, transform.position) > enemyNavigation.shootingRangeMin)
+                {
+                    if (currentShotCooldown > 0)
+                    {
+                        currentShotCooldown -= Time.deltaTime;
+                    }
+                    else
+                    {
+                        GameObject temp = Instantiate(lazur, transform.position, transform.rotation);
+                        temp.GetComponent<Lazur>().Launch(towardsPlayer.normalized, shotSpeed);
+                        Destroy(temp, 4);
+                        currentShotCooldown = shotCooldown;
+                    }
+
+
+                }
+                else
+                {
+                    if (currentShotCooldown != shotCooldown)
+                    {
+                        currentShotCooldown = shotCooldown;
+                    }
+                }
+            }
+            else
+            {
+                Quaternion r = Quaternion.LookRotation(enemyNavigation.lastKnownPlayerLocation - transform.position);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, r, maxRotationSpeed * Time.deltaTime);
+                if (currentShotCooldown != shotCooldown)
+                {
+                    currentShotCooldown = shotCooldown;
+                }
+            }
 
         }
 

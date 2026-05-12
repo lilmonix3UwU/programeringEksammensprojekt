@@ -17,11 +17,13 @@ public class EnemyNavigation : MonoBehaviour
     public float agroRange = 30.0f;
     public GameObject player;
     [SerializeField] float agroTimer;
+    public bool hunting = false;
+    public Vector3 lastKnownPlayerLocation;
 
     public bool playerVisible = false;
     public bool playerTooClose = false;
-    [SerializeField] bool hunting = false;
-    Vector3 lastKnownPlayerLocation;
+    
+    
     NavMeshAgent navMeshAgent;
     Vector3 wanderPoint;
     float wanderPause = 2;
@@ -38,9 +40,11 @@ public class EnemyNavigation : MonoBehaviour
     {
         if (playerVisible)
         {
+
             lastKnownPlayerLocation = player.transform.position;
             agroTimer = 5;
             hunting = true;
+
         }
         else if ( agroTimer > 0)
         {
@@ -95,8 +99,19 @@ public class EnemyNavigation : MonoBehaviour
                 }
 
             }
+            else if (Vector3.Distance(player.transform.position, transform.position) > shootingRange)
+            {
+                Vector3 d = (player.transform.position - transform.position).normalized * (shootingRange - Vector3.Distance(player.transform.position, transform.position));
+                d = d + transform.position;
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(-d, out hit, agroRange, NavMesh.AllAreas))
+                {
+                    navMeshAgent.SetDestination(hit.position);
+                }
+            }
             else if (navMeshAgent.destination != transform.position)
             {
+
                 navMeshAgent.SetDestination(transform.position);
             }
         }
