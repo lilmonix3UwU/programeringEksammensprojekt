@@ -6,6 +6,8 @@ public class Gauntlet : MonoBehaviour
     [SerializeField] private float timeToShake = 0.5f;
     [SerializeField] private float normalDamage = 10f;
     [SerializeField] private float chargedDamage = 20f;
+    [SerializeField] private float punchCooldown = 1f;
+    private float punchCooldownTime = 0f;
     private float damage;
 
     [Header("Effects")]
@@ -34,7 +36,7 @@ public class Gauntlet : MonoBehaviour
 
     private void Update()
     {
-        if (input.attack) 
+        if (input.attack && punchCooldownTime > punchCooldown)
         {
             anim.SetBool("Charging", true);
             
@@ -52,7 +54,7 @@ public class Gauntlet : MonoBehaviour
                 shakeTime += Time.deltaTime;
             }
         }
-        if (input.attackUp)
+        if (input.attackUp && punchCooldownTime > punchCooldown)
         {
             anim.SetBool("Charging", false);
 
@@ -63,6 +65,10 @@ public class Gauntlet : MonoBehaviour
 
             lightningChargeEffect.Stop();
             lightningPunchEffect.Play();
+
+            punchCooldownTime = 0f;
         }
+        else
+            punchCooldownTime += Time.deltaTime;
     }
 }

@@ -544,10 +544,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 50
+  airSpeed: 20
   maxSpeed: 100
   windThreshold: 30
   windEffectVelMult: 0.25
   smoothing: 0.1
+  groundDrag: 6
+  airDrag: 2
   jumpForce: 30
   jumpCooldown: 0.5
   coyoteTime: 0.2
@@ -558,6 +561,13 @@ MonoBehaviour:
   grappleLayer:
     serializedVersion: 2
     m_Bits: 64
+  wallDist: 0.5
+  minWallRunHeight: 1.5
+  wallRunGravity: 10
+  wallRunJumpForceUp: 2000
+  wallRunJumpForceSide: 1000
+  camTilt: 5
+  camTiltSmooth: 2
   dashForce: 50
   dashCooldown: 1
   dashEffect: {fileID: 8039182701063274788}
@@ -579,9 +589,9 @@ MonoBehaviour:
   grappleHandInstance: {fileID: 8382626305415006680, guid: 2b346fb499f53494db32227c753b9ff2, type: 3}
   grappleHandItem: {fileID: 404174739933344633}
   maxGrappleDist: 25
-  grappleLayer:
+  groundLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   thrustForce: 15
   climbSpeed: 1000
   jointSpring: 10
@@ -997,7 +1007,6 @@ Transform:
   m_Children:
   - {fileID: 7384078435933494358}
   - {fileID: 6626731037654596818}
-  - {fileID: 4021639397636419688}
   m_Father: {fileID: 2881172328337570338}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5032133811047963064
@@ -1049,8 +1058,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 266a978d2c03044389fc0bc642be4e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightningEffect: {fileID: 300395835422618794}
+  timeToShake: 0.5
+  normalDamage: 10
+  chargedDamage: 20
+  lightningPunchEffect: {fileID: 0}
+  lightningChargeEffect: {fileID: 0}
   punchShakeData: {fileID: 11400000, guid: d2ec53ef0a90642cba08d9232291d465, type: 2}
+  chargeShakeData: {fileID: 0}
 --- !u!114 &5161202728012077504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6707,14 +6721,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2694041970256731807}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.6221143, y: -0, z: -0, w: 0.7829265}
-  m_LocalPosition: {x: 0.9306, y: -0.3446, z: -0.038}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.88976306, y: 0.26505932, z: 0.2543664, w: 0.270856}
+  m_LocalPosition: {x: 0.00048636575, y: 0.013521779, z: 0.00012636928}
+  m_LocalScale: {x: 0.024999995, y: 0.024999999, z: 0.024999999}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2892751981226862582}
   - {fileID: 6769185584410833349}
-  m_Father: {fileID: 1930163413596228808}
+  m_Father: {fileID: 5052465891155197754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &4813674377373672503
 LineRenderer:
@@ -17779,6 +17793,7 @@ Transform:
   m_Children:
   - {fileID: 4241997876283315121}
   - {fileID: 7390461599726191131}
+  - {fileID: 4021639397636419688}
   m_Father: {fileID: 7384078435933494358}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4923067146192067260

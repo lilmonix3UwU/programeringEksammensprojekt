@@ -48,10 +48,10 @@ public class StaminaManager : MonoBehaviour
         curStamina -= amount;
         UpdateStamina();
     }
-
-    public float GetStamina()
+    
+    public bool HasStamina() 
     {
-        return curStamina;
+        return curStamina > minStamina;
     }
 
     private void UpdateStamina()

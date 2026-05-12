@@ -11,7 +11,7 @@ public class Grappler : MonoBehaviour
 
     [Header("Grappling")]
     [SerializeField] private float maxGrappleDist = 25f;
-    [SerializeField] private LayerMask grappleLayer;
+    [SerializeField] private LayerMask groundLayer;
     [System.NonSerialized] public bool wasGrappling;
     private Vector3 grapplePoint;
     private bool grappling;
@@ -106,12 +106,9 @@ public class Grappler : MonoBehaviour
 
     private void Update()
     {
-        bool hasStamina = staminaMgr.GetStamina() > staminaMgr.minStamina;
-        bool noStamina = staminaMgr.GetStamina() <= staminaMgr.minStamina;
-
-        if (input.grappleDown && canGrapple && hasStamina)
+        if (input.grappleDown && canGrapple && staminaMgr.HasStamina())
             StartGrapple();
-        if (input.grappleUp || noStamina)
+        if (input.grappleUp || !staminaMgr.HasStamina())
             StopGrapple();
 
         grappling = joint != null;
@@ -191,7 +188,7 @@ public class Grappler : MonoBehaviour
         joint.connectedAnchor = grapplePoint;
 
         float distFromGrapplePoint = difference.magnitude;
-        jointLength = distFromGrapplePoint > jointPullAmount ? Mathf.Clamp(distFromGrapplePoint - jointPullAmount, 0f, Mathf.Infinity) : distFromGrapplePoint;
+        jointLength = distFromGrapplePoint > jointPullAmount ? distFromGrapplePoint - jointPullAmount : distFromGrapplePoint;
 
         joint.maxDistance = jointLength;
         joint.minDistance = 0;
@@ -251,10 +248,10 @@ public class Grappler : MonoBehaviour
     private void CheckForGrapplePoints()
     {
         RaycastHit sphereCastHit;
-        Physics.SphereCast(cam.transform.position, predictionSphereRadius, cam.transform.forward, out sphereCastHit, maxGrappleDist, grappleLayer);
+        Physics.SphereCast(cam.transform.position, predictionSphereRadius, cam.transform.forward, out sphereCastHit, maxGrappleDist, groundLayer);
 
         RaycastHit raycastHit;
-        Physics.Raycast(cam.transform.position, cam.transform.forward, out raycastHit, maxGrappleDist, grappleLayer);
+        Physics.Raycast(cam.transform.position, cam.transform.forward, out raycastHit, maxGrappleDist, groundLayer);
 
         // Option 1 - Direct hit
         if (raycastHit.point != Vector3.zero)

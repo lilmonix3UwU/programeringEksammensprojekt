@@ -32,7 +32,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float coyoteTime = 0.2f;
     [SerializeField] private float groundRadius = 0.5f;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private LayerMask grappleLayer;
     [System.NonSerialized] public bool grounded = false;
     private Transform groundCheck;
     private bool requestedJump;
@@ -61,6 +60,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Dash")]
     [SerializeField] private float dashForce = 20f;
     [SerializeField] private float dashCooldown = 1f;
+    private float dashCooldownTime = 0f;
     private bool requestedDash;
 
     [Header("Effects")]
@@ -108,7 +108,8 @@ public class PlayerMove : MonoBehaviour
         graphic.eulerAngles = graphicRot;
 
         // Dash input
-        requestedDash = requestedDash || input.dash;
+        requestedDash = (requestedDash || input.dash) && dashCooldownTime > dashCooldown;
+        dashCooldownTime += Time.deltaTime;
 
         // Wind effect
         if (rb.velocity.magnitude > windThreshold)
@@ -131,7 +132,7 @@ public class PlayerMove : MonoBehaviour
             return;
 
         // Ground check & jump input
-        grounded = Physics.CheckSphere(groundCheck.position, groundRadius, groundLayer | grappleLayer);
+        grounded = Physics.CheckSphere(groundCheck.position, groundRadius, groundLayer);
 
         bool wasRequestingJump = requestedJump;
         requestedJump = requestedJump || input.jump;
@@ -185,6 +186,7 @@ public class PlayerMove : MonoBehaviour
         if (requestedDash)
         {
             requestedDash = false;
+            dashCooldownTime = 0f;
 
             dashEffect.Play();
             rb.AddForce(cam.transform.forward * dashForce, ForceMode.Impulse);
@@ -239,15 +241,13 @@ public class PlayerMove : MonoBehaviour
             if (readyToJump)
                 ungroundedDueToJump = false;
 
-            if (rb.velocity.magnitude < maxSpeed)
-                rb.AddForce(requestedMove * moveSpeed, ForceMode.Acceleration);
+            rb.AddForce(requestedMove * moveSpeed, ForceMode.Acceleration);
         }
         else
         {
             timeSinceUngrounded += Time.deltaTime;
 
-            if (rb.velocity.magnitude < maxSpeed)
-                rb.AddForce(requestedMove * airSpeed, ForceMode.Acceleration);
+            rb.AddForce(requestedMove * airSpeed, ForceMode.Acceleration);
         }
     }
     
