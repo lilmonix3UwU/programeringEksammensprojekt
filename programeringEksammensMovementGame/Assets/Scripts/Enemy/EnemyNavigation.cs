@@ -33,7 +33,7 @@ public class EnemyNavigation : MonoBehaviour
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.SetDestination(transform.position);
-        //Application.targetFrameRate = 10;
+        player = FindFirstObjectByType<PlayerMove>().gameObject;
     }
 
     void Update()
