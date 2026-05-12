@@ -242,8 +242,8 @@ GameObject:
   - component: {fileID: 142683396}
   - component: {fileID: 142683395}
   m_Layer: 0
-  m_Name: Capsule (1)
-  m_TagString: Untagged
+  m_Name: Player
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -954,7 +954,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1362635021}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -990,7 +990,7 @@ GameObject:
   - component: {fileID: 1378987222}
   - component: {fileID: 1378987221}
   - component: {fileID: 1378987220}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1009,9 +1009,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 047e3130c1f29ca43a667a0043f79939, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minWanderRange: 2
-  maxWanderRange: 10
+  wanderRange: 10
+  wanderPauseMin: 2
+  wanderPauseMax: 2
+  shootingRange: 20
+  shootingRangeMin: 5
   agroRange: 30
+  player: {fileID: 142683394}
+  agroTimer: 0
   playerVisible: 0
   hunting: 0
 --- !u!195 &1378987221
@@ -1118,7 +1123,7 @@ Transform:
   m_GameObject: {fileID: 1378987219}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.69, y: 2, z: 0}
+  m_LocalPosition: {x: -9.69, y: 1.161, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

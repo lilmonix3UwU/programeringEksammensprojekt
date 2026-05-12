@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,40 +9,107 @@ public class EnemyNavigation : MonoBehaviour
 
 
  
-    [SerializeField] float minWanderRange = 2.0f;
-    [SerializeField] float maxWanderRange = 10.0f;
+    [SerializeField] float wanderRange = 10.0f;
+    [SerializeField] float wanderPauseMin = 1.0f;
+    [SerializeField] float wanderPauseMax = 10.0f;
+    [SerializeField] float shootingRange = 20.0f;
+    [SerializeField] float shootingRangeMin = 5.0f;
     [SerializeField] float agroRange = 30.0f;
+    [SerializeField] GameObject player;
+    [SerializeField] float agroTimer;
 
     public bool playerVisible = false;
-
+    bool playerTooClose = false;
     [SerializeField] bool hunting = false;
     Vector3 lastKnownPlayerLocation;
     NavMeshAgent navMeshAgent;
+    Vector3 wanderPoint;
+    float wanderPause = 2;
 
 
     void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.SetDestination(transform.position);
     }
 
     void Update()
     {
+        if (playerVisible)
+        {
+            lastKnownPlayerLocation = player.transform.position;
+            agroTimer = 5;
+            hunting = true;
+        }
+        else if ( agroTimer > 0)
+        {
+            agroTimer -= Time.deltaTime;
+        }
 
+        if (agroTimer <= 0 && hunting)
+        {
+            hunting = false;
+        }
+
+        if (playerTooClose && shootingRangeMin < Vector3.Distance(player.transform.position, transform.position))
+        {
+            playerTooClose = false;
+        }
+        else if (!playerTooClose && shootingRangeMin > Vector3.Distance(player.transform.position, transform.position))
+        {
+            playerTooClose = true;
+        }
 
         if (hunting)
         {
             if (!playerVisible)
             {
-                // do what you made in diagram with circles and trial n errorr
+                Vector3 trialPos = (Random.insideUnitSphere * 0.8f);
+                NavMeshHit trialPosNavMesh;
+                trialPos = new Vector3(trialPos.x + 0.2f, trialPos.y + 0.2f, trialPos.z + 0.2f) * 20;
+                trialPos = player.transform.position + trialPos;
+                if (NavMesh.SamplePosition(trialPos, out trialPosNavMesh, 20, NavMesh.AllAreas))
+                {
+                    if (!Physics.Raycast(transform.position, trialPosNavMesh.position - transform.position, Vector3.Distance(transform.position, trialPosNavMesh.position)))
+                    {
+                        navMeshAgent.SetDestination(trialPosNavMesh.position);
+                    }
+                }
+            }
+            else if (playerTooClose)
+            {
+                Vector3 trialPos = Vector3.zero;
+                trialPos = transform.position - player.transform.position;
+                trialPos = (new Vector3(trialPos.x, transform.position.y, trialPos.z)).normalized;
+                trialPos = (trialPos * (10 - Vector3.Distance(player.transform.position, transform.position))) + transform.position;
+                NavMeshHit trialPosNavMesh;
+                if (NavMesh.SamplePosition(trialPos, out trialPosNavMesh, 10, NavMesh.AllAreas))
+                {
+                    navMeshAgent.SetDestination(trialPosNavMesh.position);
+                }
+
             }
             else if (navMeshAgent.destination != transform.position)
             {
                 navMeshAgent.SetDestination(transform.position);
             }
         }
-        else
+        else if (Vector3.Distance(transform.position, navMeshAgent.destination) < 2)
         {
-            //make it wander to random point
+            if (wanderPause > 0)
+            {
+                wanderPause -= Time.deltaTime;
+            }
+            else
+            {
+                Vector3 trialPos = Random.insideUnitSphere * wanderRange;
+                NavMeshHit trialPosNavMesh;
+                if (NavMesh.SamplePosition(trialPos, out trialPosNavMesh, wanderRange, NavMesh.AllAreas))
+                {
+                    navMeshAgent.SetDestination(trialPosNavMesh.position);
+                    wanderPause = Random.Range(wanderPauseMin, wanderPauseMax);
+                }
+            }
 
         }
     }
