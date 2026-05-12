@@ -46,7 +46,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float wallDist = 0.5f;
     [SerializeField] private float minWallRunHeight = 1.5f;
     [SerializeField] private float wallRunGravity = 10f;
-    [SerializeField] private float wallRunJumpForce = 30f;
+    [SerializeField] private float wallRunJumpForceUp = 2000f;
+    [SerializeField] private float wallRunJumpForceSide = 1000f;
     [SerializeField] private float camTilt = 5f;
     [SerializeField] private float camTiltSmooth = 2f;
     public float tilt { get; private set; }
@@ -123,6 +124,8 @@ public class PlayerMove : MonoBehaviour
             if (windEffect.isPlaying)
                 windEffect.Stop();
         }
+
+        rb.drag = grounded ? groundDrag : airDrag;
 
         if (freeze)
             return;
@@ -232,8 +235,6 @@ public class PlayerMove : MonoBehaviour
         if (grounded)
         {
             timeSinceUngrounded = 0f;
-            
-            rb.drag = groundDrag;
 
             if (readyToJump)
                 ungroundedDueToJump = false;
@@ -244,8 +245,6 @@ public class PlayerMove : MonoBehaviour
         else
         {
             timeSinceUngrounded += Time.deltaTime;
-
-            rb.drag = airDrag;
 
             if (rb.velocity.magnitude < maxSpeed)
                 rb.AddForce(requestedMove * airSpeed, ForceMode.Acceleration);
@@ -265,9 +264,12 @@ public class PlayerMove : MonoBehaviour
         {
             requestedJump = false;
 
-            Vector3 wallRunJumpDir = wallLeft ? transform.up + leftWallHit.normal : transform.up + rightWallHit.normal;
+            Vector3 wallRunJumpLeft = transform.up * wallRunJumpForceUp + leftWallHit.normal * wallRunJumpForceSide;
+            Vector3 wallRunJumpRight = transform.up * wallRunJumpForceUp + rightWallHit.normal * wallRunJumpForceSide;
+            Vector3 wallRunJumpDir = wallLeft ? wallRunJumpLeft : wallRunJumpRight;
+            
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            rb.AddForce(wallRunJumpDir * wallRunJumpForce, ForceMode.Force);
+            rb.AddForce(wallRunJumpDir, ForceMode.Impulse);
         }
     }
     

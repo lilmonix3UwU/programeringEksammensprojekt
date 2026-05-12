@@ -191,7 +191,7 @@ public class Grappler : MonoBehaviour
         joint.connectedAnchor = grapplePoint;
 
         float distFromGrapplePoint = difference.magnitude;
-        jointLength = distFromGrapplePoint > jointPullAmount ? distFromGrapplePoint - jointPullAmount : distFromGrapplePoint;
+        jointLength = distFromGrapplePoint > jointPullAmount ? Mathf.Clamp(distFromGrapplePoint - jointPullAmount, 0f, Mathf.Infinity) : distFromGrapplePoint;
 
         joint.maxDistance = jointLength;
         joint.minDistance = 0;
@@ -244,7 +244,7 @@ public class Grappler : MonoBehaviour
 
             joint.maxDistance = jointLength;
         }
-        else
+        else 
             rb.useGravity = true;
     }
 
