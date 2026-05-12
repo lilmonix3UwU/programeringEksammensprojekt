@@ -6,20 +6,20 @@ using UnityEngine.AI;
 
 public class EnemyNavigation : MonoBehaviour
 {
-
+    [SerializeField] HeadNShooting headNShooting;
 
  
     [SerializeField] float wanderRange = 10.0f;
     [SerializeField] float wanderPauseMin = 1.0f;
     [SerializeField] float wanderPauseMax = 10.0f;
-    [SerializeField] float shootingRange = 20.0f;
-    [SerializeField] float shootingRangeMin = 5.0f;
-    [SerializeField] float agroRange = 30.0f;
-    [SerializeField] GameObject player;
+    public float shootingRange = 20.0f;
+    public float shootingRangeMin = 5.0f;
+    public float agroRange = 30.0f;
+    public GameObject player;
     [SerializeField] float agroTimer;
 
     public bool playerVisible = false;
-    bool playerTooClose = false;
+    public bool playerTooClose = false;
     [SerializeField] bool hunting = false;
     Vector3 lastKnownPlayerLocation;
     NavMeshAgent navMeshAgent;
@@ -31,6 +31,7 @@ public class EnemyNavigation : MonoBehaviour
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.SetDestination(transform.position);
+        //Application.targetFrameRate = 10;
     }
 
     void Update()
@@ -64,17 +65,22 @@ public class EnemyNavigation : MonoBehaviour
         {
             if (!playerVisible)
             {
-                Vector3 trialPos = (Random.insideUnitSphere * 0.8f);
-                NavMeshHit trialPosNavMesh;
-                trialPos = new Vector3(trialPos.x + 0.2f, trialPos.y + 0.2f, trialPos.z + 0.2f) * 20;
-                trialPos = player.transform.position + trialPos;
-                if (NavMesh.SamplePosition(trialPos, out trialPosNavMesh, 20, NavMesh.AllAreas))
+                if (Vector3.Distance(transform.position, navMeshAgent.destination) < 2 || Physics.Raycast(navMeshAgent.destination, lastKnownPlayerLocation - navMeshAgent.destination, Vector3.Distance(lastKnownPlayerLocation, navMeshAgent.destination), 0))
                 {
-                    if (!Physics.Raycast(transform.position, trialPosNavMesh.position - transform.position, Vector3.Distance(transform.position, trialPosNavMesh.position)))
+                    Vector3 trialPos = (Random.insideUnitSphere * 0.8f);
+                    NavMeshHit trialPosNavMesh;
+                    trialPos = new Vector3(trialPos.x + 0.2f, trialPos.y + 0.2f, trialPos.z + 0.2f) * 20;
+                    trialPos = player.transform.position + trialPos;
+                    if (NavMesh.SamplePosition(trialPos, out trialPosNavMesh, 20, NavMesh.AllAreas))
                     {
-                        navMeshAgent.SetDestination(trialPosNavMesh.position);
+                        Debug.DrawRay(trialPosNavMesh.position, lastKnownPlayerLocation - trialPosNavMesh.position);
+                        if (!Physics.Raycast(trialPosNavMesh.position, lastKnownPlayerLocation - trialPosNavMesh.position, Vector3.Distance(lastKnownPlayerLocation, trialPosNavMesh.position), 0))
+                        {
+                            navMeshAgent.SetDestination(trialPosNavMesh.position);
+                        }
                     }
                 }
+
             }
             else if (playerTooClose)
             {
