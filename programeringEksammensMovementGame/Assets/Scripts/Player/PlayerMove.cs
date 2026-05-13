@@ -147,7 +147,7 @@ public class PlayerMove : MonoBehaviour
         wallRight = Physics.Raycast(transform.position, cam.right, out rightWallHit, wallDist);
 
         // Anim
-        bool walking = moveInput.sqrMagnitude > 0.01f && grounded;
+        bool walking = input.move.sqrMagnitude > 0.01f && grounded;
         gauntletAnim.SetBool("Walking", walking);
     }
 
