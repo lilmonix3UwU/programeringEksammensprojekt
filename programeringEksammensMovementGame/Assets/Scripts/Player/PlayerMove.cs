@@ -9,7 +9,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float airSpeed = 20f;
     [SerializeField] private float windThreshold = 20f;
     [SerializeField] private float windEffectVelMult = 0.8f;
-    [SerializeField] private float smoothing = 0.25f;
     [SerializeField] private float groundDrag = 6f;
     [SerializeField] private float airDrag = 2f;
     [System.NonSerialized] public bool freeze;
@@ -99,13 +98,10 @@ public class PlayerMove : MonoBehaviour
     private void Update()
     {
         // Move input
-        Vector2 moveInput = input.move;
-        smoothInput = Vector2.SmoothDamp(smoothInput, moveInput, ref moveVel, smoothing);
-        requestedMove = graphic.right * smoothInput.x + graphic.forward * smoothInput.y;
+        requestedMove = graphic.right * input.move.x + graphic.forward * input.move.y;
 
         // Rotate
-        Vector3 graphicRot = new Vector3(0f, cam.eulerAngles.y, 0f);
-        graphic.eulerAngles = graphicRot;
+        graphic.eulerAngles = new Vector3(0f, cam.eulerAngles.y, 0f);
 
         // Dash input
         requestedDash = (requestedDash || input.dash) && dashCooldownTime > dashCooldown;
@@ -143,34 +139,16 @@ public class PlayerMove : MonoBehaviour
             grappler.wasGrappling = false;
 
         if (wasInAir && grounded)
-        {
-            //landSound.Play();
             wasInAir = false;
-        }
 
         // Wall run
         canWallRun = !Physics.Raycast(transform.position, Vector3.down, minWallRunHeight);
         wallLeft = Physics.Raycast(transform.position, -cam.right, out leftWallHit, wallDist);
         wallRight = Physics.Raycast(transform.position, cam.right, out rightWallHit, wallDist);
 
-        // Footsteps
+        // Anim
         bool walking = moveInput.sqrMagnitude > 0.01f && grounded;
-        if (walking)
-        {
-            gauntletAnim.SetBool("Walking", true);
-        
-            footstepTimer += Time.deltaTime;
-            if (footstepTimer >= footstepInterval)
-            {
-                //footstepSounds[Random.Range(0, footstepSounds.Length)].Play();
-                footstepTimer = 0;
-            }
-        }
-        else 
-        {
-            gauntletAnim.SetBool("Walking", false);
-            footstepTimer = 0;
-        }
+        gauntletAnim.SetBool("Walking", walking);
     }
 
     private void LateUpdate()
