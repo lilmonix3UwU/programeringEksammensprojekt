@@ -23,6 +23,8 @@ public class WinManager : MonoBehaviour
         enemies = navs.Length;
 
         ui.SetActive(false);
+        
+        Time.timeScale = 1f;
     }
     
     private void Update() 
