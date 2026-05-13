@@ -4,11 +4,8 @@ public class Gauntlet : MonoBehaviour
 {
     [Header("Customize")]
     [SerializeField] private float timeToShake = 0.5f;
-    [SerializeField] private float normalDamage = 10f;
-    [SerializeField] private float chargedDamage = 20f;
     [SerializeField] private float punchCooldown = 1f;
     private float punchCooldownTime = 0f;
-    private float damage;
 
     [Header("Effects")]
     [SerializeField] private ParticleSystem lightningPunchEffect;
@@ -22,14 +19,15 @@ public class Gauntlet : MonoBehaviour
     private Animator anim;
     private ShakeTransform st;
 
+    private bool colliding;
+    private EnemyDeath enemyDeath;
+
     private InputManager input;
 
     private void Start()
     {
         anim = GetComponent<Animator>();
         st = Camera.main.GetComponent<ShakeTransform>();
-
-        damage = normalDamage;
 
         input = InputManager.Instance;
     }
@@ -42,7 +40,6 @@ public class Gauntlet : MonoBehaviour
             
             if (shakeTime >= timeToShake) 
             {
-                damage = chargedDamage;
                 st.AddShakeEvent(chargeShakeData);
                 
                 if (!lightningChargeEffect.isPlaying)
@@ -50,15 +47,12 @@ public class Gauntlet : MonoBehaviour
             }
             else 
             {
-                damage = Mathf.Lerp(normalDamage, chargedDamage, shakeTime / timeToShake);
                 shakeTime += Time.deltaTime;
             }
         }
         if (input.attackUp && punchCooldownTime > punchCooldown)
         {
             anim.SetBool("Charging", false);
-
-            damage = normalDamage;
 
             st.AddShakeEvent(punchShakeData);
             shakeTime = 0f;
@@ -67,8 +61,26 @@ public class Gauntlet : MonoBehaviour
             lightningPunchEffect.Play();
 
             punchCooldownTime = 0f;
+            
+            if (colliding && enemyDeath != null)
+                enemyDeath.DIE();
         }
         else
             punchCooldownTime += Time.deltaTime;
+    }
+    
+    private void OnTriggerStay(Collider other) 
+    {
+        if (other.TryGetComponent(out EnemyDeath death)) 
+        {
+            colliding = true;
+            enemyDeath = death;
+        }
+    }
+    
+    private void OnTriggerExit(Collider other) 
+    {
+        if (other.GetComponent<EnemyDeath>()) 
+            colliding = false;
     }
 }

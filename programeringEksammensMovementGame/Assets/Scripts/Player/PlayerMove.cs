@@ -6,7 +6,6 @@ public class PlayerMove : MonoBehaviour
     [Header("Move")]
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float airSpeed = 20f;
-    [SerializeField] private float maxSpeed = 20f;
     [SerializeField] private float windThreshold = 20f;
     [SerializeField] private float windEffectVelMult = 0.8f;
     [SerializeField] private float smoothing = 0.25f;

@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HeadNShooting : MonoBehaviour
 {
-    [SerializeField] EnemyNavigation enemyNavigation;
     [SerializeField] GameObject lazur;
     [SerializeField] float viewAngle = 70;
     [SerializeField] float maxRotationSpeed = 30;
@@ -13,18 +10,21 @@ public class HeadNShooting : MonoBehaviour
     float currentShotCooldown = 0;
 
     GameObject player;
+    EnemyNavigation enemyNavigation;
 
 
 
     void Start()
     {
-        player = enemyNavigation.player;
+        enemyNavigation = transform.parent.Find("body").GetComponent<EnemyNavigation>();
+    
+        player = FindFirstObjectByType<PlayerMove>().gameObject;
         currentShotCooldown = shotCooldown;
     }
 
     void Update()
     {
-        transform.position = new Vector3(enemyNavigation.transform.position.x, enemyNavigation.transform.position.y + 0.65f, enemyNavigation.transform.position.z);
+        transform.position = new Vector3(enemyNavigation.transform.position.x, enemyNavigation.transform.position.y + 1.3f, enemyNavigation.transform.position.z);
         Vector3 towardsPlayer = player.transform.position - transform.position;
         RaycastHit hit;
         if (Vector3.Angle(transform.forward, towardsPlayer) < viewAngle && Physics.Raycast(transform.position, towardsPlayer, out hit, enemyNavigation.agroRange))

@@ -124,10 +124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970d37e4a55233342b4272da3e617b07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyNavigation: {fileID: 2544707058944783374}
   lazur: {fileID: 5880438572289218310, guid: fc07f367a6dc53a46bae9e2a92862fa6, type: 3}
   viewAngle: 70
-  maxRotationSpeed: 180
+  maxRotationSpeed: 500
   shotSpeed: 20
   shotCooldown: 1
 --- !u!114 &4209483385418928224
@@ -142,7 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 870bf40ec2e5a8647b1329b222854620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyNavigation: {fileID: 2544707058944783374}
   headNShooting: {fileID: 1470490863068341636}
   bum: {fileID: 5584612619812524693, guid: 9426c64f9dad3c14ab275686cb291044, type: 3}
 --- !u!1 &929585790683381243
@@ -627,7 +625,6 @@ MonoBehaviour:
   shootingRange: 25
   shootingRangeMin: 2.5
   agroRange: 30
-  player: {fileID: 0}
   agroTimer: 0
   hunting: 0
   lastKnownPlayerLocation: {x: 0, y: 0, z: 0}
@@ -666,7 +663,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 870bf40ec2e5a8647b1329b222854620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyNavigation: {fileID: 2544707058944783374}
   headNShooting: {fileID: 1470490863068341636}
   bum: {fileID: 5584612619812524693, guid: 9426c64f9dad3c14ab275686cb291044, type: 3}
 --- !u!1 &7045910265702103540
@@ -909,8 +905,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -13.037, y: 1.113, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.6, y: 1.6, z: 1.6}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8980499332950136122}
   - {fileID: 3186361703298448008}
@@ -934,7 +930,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 371649934453029290, guid: ebeea6f2ee919dfbf8f4603dc7a251bd, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1541200265749807813, guid: ebeea6f2ee919dfbf8f4603dc7a251bd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1002,7 +998,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4454106161932775191, guid: ebeea6f2ee919dfbf8f4603dc7a251bd, type: 3}
       propertyPath: m_InnerSpotAngle
-      value: 70
+      value: 54.190384
       objectReference: {fileID: 0}
     - target: {fileID: 4454106161932775191, guid: ebeea6f2ee919dfbf8f4603dc7a251bd, type: 3}
       propertyPath: m_Shadows.m_Bias

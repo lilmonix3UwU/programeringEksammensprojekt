@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Lazur : MonoBehaviour
 {
@@ -22,5 +21,11 @@ public class Lazur : MonoBehaviour
     {
         d = direction;
         s = speed;
+    }
+    
+    private void OnTriggerEnter(Collider other) 
+    {
+        if (other.tag == "Player")
+            SceneManager.LoadScene(0);
     }
 }

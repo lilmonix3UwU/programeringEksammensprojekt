@@ -49,6 +49,12 @@ public class StaminaManager : MonoBehaviour
         UpdateStamina();
     }
     
+    public void SetStamina(float amount)
+    {
+        curStamina = amount;
+        UpdateStamina();
+    }
+    
     public bool HasStamina() 
     {
         return curStamina > minStamina;

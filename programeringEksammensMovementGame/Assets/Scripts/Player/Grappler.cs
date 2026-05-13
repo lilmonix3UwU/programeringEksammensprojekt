@@ -43,6 +43,7 @@ public class Grappler : MonoBehaviour
     private bool canGrapple;
 
     [Header("Stamina")]
+    [SerializeField] private float climbStaminalLoss = 0.5f;
     [SerializeField] private float passiveStaminaLoss = 0.1f;
     [SerializeField] private float passiveStaminaGain = 0.2f;
     [SerializeField] private float staminaAirMultiplier = 0.25f;
@@ -225,6 +226,8 @@ public class Grappler : MonoBehaviour
         if (input.climbingUpwards)
         {
             rb.useGravity = false;
+
+            staminaMgr.LoseStamina(climbStaminalLoss * Time.deltaTime);
 
             if (jointLength > 0)
                 jointLength -= climbSpeed * Time.deltaTime;

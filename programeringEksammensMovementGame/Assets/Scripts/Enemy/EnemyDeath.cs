@@ -6,9 +6,15 @@ using UnityEngine.AI;
 
 public class EnemyDeath : MonoBehaviour
 {
-    [SerializeField] EnemyNavigation enemyNavigation;
     [SerializeField] HeadNShooting headNShooting;
     [SerializeField] GameObject bum;
+    EnemyNavigation enemyNavigation;
+
+    private void Start() 
+    {
+        enemyNavigation = transform.parent.Find("body").GetComponent<EnemyNavigation>();
+    }
+    
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
@@ -29,6 +35,7 @@ public class EnemyDeath : MonoBehaviour
     private IEnumerator BOOMDIE()
     {
         yield return new WaitForSeconds(2);
+        WinManager.Instance.enemies--;
         GameObject temp1 = Instantiate(bum, enemyNavigation.transform.position, bum.transform.rotation);
         GameObject temp2 = Instantiate(bum, headNShooting.transform.position, bum.transform.rotation);
         Destroy(temp1, 1);

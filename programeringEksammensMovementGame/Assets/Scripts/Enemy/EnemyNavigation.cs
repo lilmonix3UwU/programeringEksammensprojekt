@@ -15,7 +15,6 @@ public class EnemyNavigation : MonoBehaviour
     public float shootingRange = 20.0f;
     public float shootingRangeMin = 5.0f;
     public float agroRange = 30.0f;
-    public GameObject player;
     [SerializeField] float agroTimer;
     public bool hunting = false;
     public Vector3 lastKnownPlayerLocation;
@@ -23,7 +22,7 @@ public class EnemyNavigation : MonoBehaviour
     public bool playerVisible = false;
     public bool playerTooClose = false;
     
-    
+    private GameObject player;
     NavMeshAgent navMeshAgent;
     Vector3 wanderPoint;
     float wanderPause = 2;
