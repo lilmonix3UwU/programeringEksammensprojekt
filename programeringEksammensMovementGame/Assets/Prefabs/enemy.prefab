@@ -623,7 +623,7 @@ MonoBehaviour:
   wanderPauseMin: 2
   wanderPauseMax: 5
   shootingRange: 25
-  shootingRangeMin: 2.5
+  shootingRangeMin: 5
   agroRange: 30
   agroTimer: 0
   hunting: 0

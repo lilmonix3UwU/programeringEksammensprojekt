@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMove : MonoBehaviour
@@ -279,4 +280,10 @@ public class PlayerMove : MonoBehaviour
     }
 
     private void ResetJump() => readyToJump = true;
+    
+    private void OnTriggerEnter(Collider other) 
+    {
+        if (other.tag == "Hurt")
+            SceneManager.LoadScene(0);
+    }
 }

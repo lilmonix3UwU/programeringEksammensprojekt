@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 4627730269904638814}
   - component: {fileID: 5807345988250978503}
   - component: {fileID: 9110660576371381251}
-  m_Layer: 0
+  - component: {fileID: 1865423434429283134}
+  m_Layer: 2
   m_Name: laser
   m_TagString: Hurt
   m_Icon: {fileID: 0}
@@ -170,6 +171,29 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!136 &1865423434429283134
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2804791438892013768}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5000001
+  m_Height: 0.68
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5880438572289218310
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,8 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 96287060069406330}
   - component: {fileID: 3203923550447358518}
-  - component: {fileID: 3204975665237379282}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: lazur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,24 +239,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fde3887cf232ee84fb934b08b53bdd12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!65 &3204975665237379282
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5880438572289218310}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.1, y: 0.1, z: 0.5}
-  m_Center: {x: 0, y: 0, z: 0}
