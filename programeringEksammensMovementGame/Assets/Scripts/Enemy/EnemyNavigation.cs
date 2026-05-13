@@ -122,7 +122,7 @@ public class EnemyNavigation : MonoBehaviour
             }
             else
             {
-                Vector3 trialPos = Random.insideUnitSphere * wanderRange;
+                Vector3 trialPos = (Random.insideUnitSphere * wanderRange) + transform.position;
                 NavMeshHit trialPosNavMesh;
                 if (NavMesh.SamplePosition(trialPos, out trialPosNavMesh, wanderRange, NavMesh.AllAreas))
                 {
